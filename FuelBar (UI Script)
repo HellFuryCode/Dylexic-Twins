@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class FuelBar : MonoBehaviour
 {
     public Image fuelBarFill;
-    public PlayerController2D player; // Reference your movement script
+    public PlayerController2D player; 
     public float maxFuel = 100f;
 
     void Update()
