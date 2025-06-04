@@ -1,0 +1,55 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class SoySauceFuel : MonoBehaviour
+{
+    public static SoySauceFuel instance;
+
+    public TMP_Text pointText;
+    public int CurrentPoints = 0;
+
+    [SerializeField] private Color flashColor = Color.yellow;
+    private Color originalColor;
+
+    void Awake()
+    {
+        instance = this;
+    }
+
+    void Start()
+    {
+        if (pointText != null)
+        {
+            originalColor = pointText.color;
+            UpdateUI();
+        }
+    }
+
+    public void IncreasePoints(int points)
+    {
+        CurrentPoints += points;
+        UpdateUI();
+        StartCoroutine(FlashText());
+        
+    }
+
+    private void UpdateUI()
+    {
+        if (pointText != null)
+        {
+            pointText.text = "Fuel: " + CurrentPoints.ToString();
+        }
+    }
+
+    private IEnumerator FlashText()
+    {
+        if (pointText != null)
+        {
+            pointText.color = flashColor;
+            yield return new WaitForSeconds(0.2f);
+            pointText.color = originalColor;
+        }
+    }
+}
