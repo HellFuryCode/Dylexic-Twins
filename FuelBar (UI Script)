@@ -4,15 +4,24 @@ using UnityEngine.UI;
 public class FuelBar : MonoBehaviour
 {
     public Image fuelBarFill;
-    public PlayerController2D player; 
+    public Player player; // optional fallback
+    public JetpackController jetpack; // preferred source
+
     public float maxFuel = 100f;
 
     void Update()
     {
-        if (player != null)
+        float currentFuel = 0f;
+
+        if (jetpack != null)
         {
-            float currentFuel = player.fuel;
-            fuelBarFill.fillAmount = currentFuel / maxFuel;
+            currentFuel = jetpack.fuel;
         }
+        else if (player != null)
+        {
+            currentFuel = player.GetComponent<Player>().GetComponent<JetpackController>()?.fuel ?? 0f;
+        }
+
+        fuelBarFill.fillAmount = currentFuel / maxFuel;
     }
 }
