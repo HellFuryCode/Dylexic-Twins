@@ -4,12 +4,10 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-    public float thrustForce = 1f;           // How hard you push forward
-    public float rotationSpeed = 100f;       // How fast you rotate
-    public float maxSpeed = 5f;              // Speed limit
+    public float moveForce = 10f;
+    public float maxSpeed = 7f;
 
-
-    public float bounceForce = 5f;           // Extra bounce impulse on collision
+    public float bounceForce = 5f;
     public float bounceCooldown = 0.1f;
 
     private Rigidbody2D rb;
@@ -20,39 +18,32 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
-    {
-        Rotate();
-    }
-
     void FixedUpdate()
     {
         ApplyThrust();
         LimitSpeed();
     }
 
-    void Rotate()
-    {
-        float rotateInput = Input.GetAxis("Horizontal"); // A/D or Left/Right
-        transform.Rotate(0, 0, rotateInput * rotationSpeed * Time.deltaTime);
-    }
-
     void ApplyThrust()
     {
-        float thrustInput = Input.GetAxis("Vertical"); // W/S or Up/Down
-        Vector2 force = transform.right * thrustInput * thrustForce;
+        float xInput = Input.GetAxisRaw("Horizontal"); // A/D
+        float yInput = Input.GetAxisRaw("Vertical");   // W/S
+
+        Vector2 inputDirection = new Vector2(xInput, yInput).normalized;
+        Vector2 force = inputDirection * moveForce;
+
         rb.AddForce(force);
     }
 
     void LimitSpeed()
     {
-        if (rb.linearVelocity.magnitude > maxSpeed)
+        if (rb.velocity.magnitude > maxSpeed)
         {
-            rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
+            rb.velocity = rb.velocity.normalized * maxSpeed;
         }
     }
 
-   void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
         if (Time.time - lastBounceTime < bounceCooldown) return;
 
@@ -60,7 +51,6 @@ public class Player : MonoBehaviour
         rb.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
         lastBounceTime = Time.time;
 
-        // Optional: Only reload scene if it's a hazard
         if (collision.gameObject.CompareTag("Hazard"))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
