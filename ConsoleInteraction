@@ -1,0 +1,52 @@
+using UnityEngine;
+
+public class ConsoleInteraction : MonoBehaviour
+{
+    public SushiManager sushiManager;
+    public int requiredSushi = 5;
+    public GameObject fixedConsoleVisual;
+    public GameObject brokenConsoleVisual;
+
+    private bool playerInRange = false;
+    private bool fixedConsole = false;
+
+    void Update()
+    {
+        if (playerInRange && !fixedConsole && Input.GetKeyDown(KeyCode.E))
+        {
+            if (sushiManager.HasEnoughSushi(requiredSushi))
+            {
+                sushiManager.UseSushi(requiredSushi);
+                FixConsole();
+            }
+            else
+            {
+                sushiManager.ShowNotEnoughSushiPrompt();
+            }
+        }
+    }
+
+    void FixConsole()
+    {
+        fixedConsole = true;
+        if (brokenConsoleVisual != null) brokenConsoleVisual.SetActive(false);
+        if (fixedConsoleVisual != null) fixedConsoleVisual.SetActive(true);
+        Debug.Log("Console fixed!");
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
+        }
+    }
+}
