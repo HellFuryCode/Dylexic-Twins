@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class JetpackController : MonoBehaviour
 {
-    public Transform jetDirection;
     public float jetBoostForce = 10f;
     public float fuelDrainRate = 15f;
-    public float fuelRechargeRate = 5f;
     public float maxFuel = 100f;
     public float fuel = 100f;
 
@@ -24,21 +22,18 @@ public class JetpackController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isJetpackActive && fuel > 0f && Input.GetKey(KeyCode.W))
-        {
-            if (jetDirection != null)
-            {
-                Vector2 jetForce = (jetDirection.position - transform.position).normalized * jetBoostForce;
-                rb.AddForce(jetForce);
+        Vector2 inputDirection = new Vector2(
+            Input.GetAxisRaw("Horizontal"),
+            Input.GetAxisRaw("Vertical")
+        ).normalized;
 
-                fuel -= fuelDrainRate * Time.fixedDeltaTime;
-                fuel = Mathf.Max(fuel, 0f);
-            }
-        }
-        else
+        if (isJetpackActive && fuel > 0f && inputDirection != Vector2.zero)
         {
-            fuel += fuelRechargeRate * Time.fixedDeltaTime;
-            fuel = Mathf.Min(fuel, maxFuel);
+            Vector2 jetForce = inputDirection * jetBoostForce;
+            rb.AddForce(jetForce, ForceMode2D.Force);
+
+            fuel -= fuelDrainRate * Time.fixedDeltaTime;
+            fuel = Mathf.Max(fuel, 0f);
         }
     }
 
