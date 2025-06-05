@@ -33,14 +33,14 @@ public class Player : MonoBehaviour
 
     void Rotate()
     {
-        float rotateInput = -Input.GetAxis("Horizontal"); // A/D or Left/Right
+        float rotateInput = Input.GetAxis("Horizontal"); // A/D or Left/Right
         transform.Rotate(0, 0, rotateInput * rotationSpeed * Time.deltaTime);
     }
 
     void ApplyThrust()
     {
         float thrustInput = Input.GetAxis("Vertical"); // W/S or Up/Down
-        Vector2 force = transform.up * thrustInput * thrustForce;
+        Vector2 force = transform.right * thrustInput * thrustForce;
         rb.AddForce(force);
     }
 
@@ -59,9 +59,6 @@ public class Player : MonoBehaviour
         Vector2 bounceDirection = collision.contacts[0].normal;
         rb.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
         lastBounceTime = Time.time;
-
-        if (bounceSound != null)
-            bounceSound.Play();
 
         // Optional: Only reload scene if it's a hazard
         if (collision.gameObject.CompareTag("Hazard"))
