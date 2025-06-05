@@ -1,41 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SushiManager: MonoBehaviour
+public class SushiManager : MonoBehaviour
 {
     public int SushiCount;
     public Text SushiText;
-    public int Sesame_seed Count;
-    public Text  Sesame_seedText;
-    public GameObject console;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
+    public int SesameSeedCount;
+    public Text SesameSeedText;
+
+    public GameObject notEnoughSushiUI; // UI Text like "Not enough sushi to fix!"
+    
     void Update()
     {
-        SushiText.text = SushiCount.ToString(); 
-
-         Sesame_seedText.text =  Sesame_seedCount.ToString(); 
-    
+        SushiText.text = SushiCount.ToString();
+        SesameSeedText.text = SesameSeedCount.ToString();
     }
-    if(SushiCount == 5 && !consoleDestroyed)
-            {
-                consoleDestroyed = true;
-                Destroy(console);
-            }
+
+    public bool HasEnoughSushi(int required)
+    {
+        return SushiCount >= required;
+    }
+
+    public void UseSushi(int amount)
+    {
+        SushiCount -= amount;
+        SushiCount = Mathf.Max(SushiCount, 0);
+    }
+
+    public void ShowNotEnoughSushiPrompt()
+    {
+        if (notEnoughSushiUI != null)
+        {
+            notEnoughSushiUI.SetActive(true);
+            Invoke("HideNotEnoughSushiPrompt", 2f); // hide after 2 seconds
+        }
+    }
+
+    void HideNotEnoughSushiPrompt()
+    {
+        if (notEnoughSushiUI != null)
+            notEnoughSushiUI.SetActive(false);
+    }
 }
-
-
-//Simple collectible coin system Unity Tutorial
-//date accessed 11/10/2024
-//created by:MoreBBlakeyy
-//created on:02/12/2024
-//https://www.youtube.com/watch?v=5GWRPwuWtsQ&t=358s
-//Youtube video
