@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class SushiCounter : MonoBehaviour
 {
-    public SushiManger TM;
+    public SushiManager TM;
 
      void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider.gameObject.CompareTag("Sushi"))
         {
             Destroy(collider.gameObject);
-            TM.trinketsCount ++;
+            TM.SushiCount ++;
         }
 
-        if(collider.gameObject.CompareTag("Seseam seeds"))
+        if(collider.gameObject.CompareTag("Seseam_seeds"))
         {
             Destroy(collider.gameObject);
-            TM.KeyCount ++;
+            TM.Seseam_seedsCount ++;
         }
     }
 }
