@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
+    public float rotationSmoothSpeed = 5f; 
+
     public float moveForce = 10f;
     public float maxSpeed = 7f;
 
@@ -21,7 +23,7 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         ApplyThrust();
-        LimitSpeed();
+        ApplyRotationToVelocity();
     }
 
     void ApplyThrust()
@@ -35,11 +37,13 @@ public class Player : MonoBehaviour
         rb.AddForce(force);
     }
 
-    void LimitSpeed()
+    void ApplyRotationToVelocity()
     {
-        if (rb.velocity.magnitude > maxSpeed)
+        if (rb.velocity.sqrMagnitude > 0.1f)
         {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
+            float angle = Mathf.Atan2(rb.velocity.y, rb.velocity.x) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotationSmoothSpeed);
         }
     }
 
