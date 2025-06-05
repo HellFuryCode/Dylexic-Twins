@@ -7,9 +7,13 @@ public class Player : MonoBehaviour
     public float thrustForce = 1f;           // How hard you push forward
     public float rotationSpeed = 100f;       // How fast you rotate
     public float maxSpeed = 5f;              // Speed limit
+
+
     public float bounceForce = 5f;           // Extra bounce impulse on collision
+    public float bounceCooldown = 0.1f;
 
     private Rigidbody2D rb;
+    private float lastBounceTime;
 
     void Start()
     {
@@ -48,16 +52,21 @@ public class Player : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+   void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
-        {
-            // Add bounce force opposite the collision normal
-            Vector2 bounceDirection = collision.contacts[0].normal;
-            rb.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
+        if (Time.time - lastBounceTime < bounceCooldown) return;
 
-            // Reload scene or other logic
-            SceneManager.LoadScene(0);
+        Vector2 bounceDirection = collision.contacts[0].normal;
+        rb.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
+        lastBounceTime = Time.time;
+
+        if (bounceSound != null)
+            bounceSound.Play();
+
+        // Optional: Only reload scene if it's a hazard
+        if (collision.gameObject.CompareTag("Hazard"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }
