@@ -1,0 +1,59 @@
+using UnityEngine;
+using System.Collections;
+
+public class FuelPickUp : MonoBehaviour
+{
+    public enum FuelType { Small, Medium, Large, Infinite }
+    public FuelType type = FuelType.Small;
+
+    public float smallAmount = 15f;
+    public float mediumAmount = 30f;
+    public float largeAmount = 50f;
+
+    public AudioSource fuelPickUpSound;
+    public GameObject screenFX;
+    public fuel_collect flashEffect;
+
+    private void Start()
+    {
+        if (screenFX != null)
+            screenFX.SetActive(false);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Player_controls player = other.GetComponent<Player_controls>();
+
+            if (player != null && player.fuel < 100f)
+            {
+                float fuelToAdd = 0f;
+
+                switch (type)
+                {
+                    case FuelType.Small: fuelToAdd = smallAmount; break;
+                    case FuelType.Medium: fuelToAdd = mediumAmount; break;
+                    case FuelType.Large: fuelToAdd = largeAmount; break;
+                    case FuelType.Infinite: fuelToAdd = 999f; break; // basically max
+                }
+
+                player.fuel += fuelToAdd;
+                player.fuel = Mathf.Min(player.fuel, 100f);
+
+                if (fuelPickUpSound != null) fuelPickUpSound.Play();
+                if (screenFX != null) screenFX.SetActive(true);
+                // if (flashEffect != null) flashEffect.TriggerFlash();
+
+                StartCoroutine(DisablePickup());
+            }
+        }
+    }
+
+    private IEnumerator DisablePickup()
+    {
+        yield return new WaitForSeconds(0.08f);
+        if (screenFX != null) screenFX.SetActive(false);
+        gameObject.SetActive(false);
+    }
+}
